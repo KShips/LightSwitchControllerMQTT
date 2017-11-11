@@ -18,7 +18,8 @@
  */
 
 #include <SPI.h>                  // For networking
-#include <Ethernet.h>             // For networking
+//#include <Ethernet.h>             // For networking using W5100
+#include <Ethernet2.h>             // For networking using W5500
 #include <PubSubClient.h>         // For MQTT
 #include "Wire.h"                 // For MAC address ROM
 #include "DHT.h"                  // For temperature / humidity sensor
