@@ -23,8 +23,7 @@
 #include <PubSubClient.h>         // For MQTT
 #include "Wire.h"                 // For MAC address ROM
 #include "DHT.h"                  // For temperature / humidity sensor
-#include <FTOLED.h>               // For OLED display
-#include <fonts/SystemFont5x7.h>  // For OLED display
+
 
 /*--------------------------- Configuration ------------------------------*/
 /* Network Settings */
@@ -41,18 +40,7 @@ char messageBuffer[100];
 char topicBuffer[100];
 char clientBuffer[50];
 
-/* Display Settings */
-#define ENABLE_OLED       true  // true/false. Enable if you have a Freetronics OLED128 connected
-const long oled_timeout = 20;   // Seconds before screen blanks after last activity
-const byte pin_cs       = 48;
-const byte pin_dc       = 49;
-const byte pin_reset    = 53;
-OLED oled(pin_cs, pin_dc, pin_reset);
-OLED_TextBox box(oled);
 long lastActivityTime   = 0;
-
-/* Tilt sensor to change display orientation */
-#define TILT_SENSOR_PIN   5     // The tilt sensor pulls this pin to GND when activated
 
 /* Watchdog Timer Settings */
 #define ENABLE_EXTERNAL_WATCHDOG        true       // true / false
@@ -157,28 +145,7 @@ void setup()
     digitalWrite(WATCHDOG_PIN, LOW);
   }
   
-  /* Set up the tilt sensor */
-  pinMode(TILT_SENSOR_PIN, INPUT_PULLUP);
   delay(100);
-  
-  if( ENABLE_OLED == true )
-  {
-    oled.begin();
-    if(digitalRead(TILT_SENSOR_PIN) == LOW)
-    {
-      Serial.println("Vertical alignment");
-      oled.setOrientation(ROTATE_90);
-    } else {
-      Serial.println("Horizontal alignment");
-    }
-    oled.selectFont(SystemFont5x7);
-    box.setForegroundColour(DODGERBLUE);
-    
-    box.println(F("   SuperHouse.TV     "));
-    box.println(F(" Button Sensor v2.2  "));
-    box.println(F("Getting MAC address: "));
-    box.print  (F("  "));
-  }
   
   Wire.begin();        // Wake up I2C bus
   
@@ -198,11 +165,6 @@ void setup()
   char tmpBuf[17];
   sprintf(tmpBuf, "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
   Serial.println(tmpBuf);
-  
-  if( ENABLE_OLED == true )
-  {
-    box.println(tmpBuf);
-  }
   
   // Set up the Ethernet library to talk to the Wiznet board
   if( ENABLE_DHCP == true )
@@ -226,21 +188,6 @@ void setup()
   
   Serial.println();
   Serial.println(Ethernet.localIP());
-  
-  if( ENABLE_OLED == true )
-  {
-      box.println(F("My IP:"));
-      box.print("  ");
-      for (byte thisByte = 0; thisByte < 4; thisByte++) {
-      // print the value of each byte of the IP address:
-      box.print(Ethernet.localIP()[thisByte], DEC);
-      if( thisByte < 3 )
-      {
-        box.print(".");
-      }
-    }
-    box.println();
-  }
   
   Serial.println("Setting input pull-ups");
   for( byte i = 0; i < 48; i++)
@@ -270,14 +217,6 @@ void loop()
 {
   if (!client.connected()) {
     reconnect();
-  }
-  
-  if( ENABLE_OLED == true )
-  {
-    if( millis() > (lastActivityTime + (1000 * oled_timeout)))
-    {
-      oled.setDisplayOn(false);
-    }
   }
 
   runHeartbeat();
@@ -338,10 +277,6 @@ void processButtonDigital( byte buttonId )
         if((millis() - lastActivityTime) > DEBOUNCE_DELAY)  // Proceed if we haven't seen a recent event on this button
         {
           lastActivityTime = millis();
-          if( ENABLE_OLED == true )
-          {
-            oled.setDisplayOn(true);
-          }
     
           lastButtonPressed = buttonId;
           Serial.print( "transition on ");
@@ -360,12 +295,6 @@ void processButtonDigital( byte buttonId )
           //client.publish(topicBuffer, messageBuffer);
         
           client.publish("buttons", messageBuffer);
-          if( ENABLE_OLED == true )
-          {
-            box.setForegroundColour(LIMEGREEN);
-            box.print(F("Button pressed: "));
-            box.println(buttonId);
-          }
         }
       } else {
         // Transition off
