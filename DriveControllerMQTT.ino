@@ -182,7 +182,7 @@ void setup()
   Serial.println(Ethernet.localIP());
   
   Serial.println("Setting input pull-ups");
-  for( byte i = 0; i < 48; i++)
+  for( byte i = 0; i < 20; i++)
   {
     pinMode(buttonArray[i], INPUT_PULLUP);
     Serial.print(buttonArray[i]);
