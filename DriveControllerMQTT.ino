@@ -34,8 +34,8 @@ static uint8_t mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEF };  // Set if no MAC
 IPAddress ip(192,168,1,35);                // Default if DHCP is not used
 
 /* MQTT Settings */
-IPAddress broker(192,168,1,111);        // MQTT broker
-const char* statusTopic  = "events";    // MQTT topic to publish status reports
+IPAddress broker(192,168,178,42);        // MQTT broker
+const char* statusTopic  = "drive";    // MQTT topic to publish status reports
 char messageBuffer[100];
 char topicBuffer[100];
 char clientBuffer[50];
@@ -43,7 +43,7 @@ char clientBuffer[50];
 long lastActivityTime   = 0;
 
 /* Watchdog Timer Settings */
-#define ENABLE_EXTERNAL_WATCHDOG        true       // true / false
+#define ENABLE_EXTERNAL_WATCHDOG        false       // true / false
 #define WATCHDOG_PIN                    3          // Output to pat the watchdog
 #define WATCHDOG_PULSE_LENGTH           50         // Milliseconds
 #define WATCHDOG_RESET_INTERVAL         30000      // Milliseconds. Also the period for sensor reports.
@@ -51,9 +51,7 @@ long watchdogLastResetTime = 0;
 
 
 // Panel-specific configuration:
-//int panelId = 13;  // East switchboard (old controller)
-//int panelId = 14;  // West switchboard
-int panelId = 20;    // East switchboard (new rack mount controller)
+int panelId = 21;    // Driveway
 
 /* Temperature / Humidity Sensor Settings */
 // Note: Report interval is set by WATCHDOG_RESET_INTERVAL above
@@ -114,18 +112,12 @@ void reconnect() {
 
 /* ************************************************************************************* */
 /* Button setup */
-static byte lastButtonState[48] = {   0,  0,  0,  0,    0,  0,  0,  0,
+static byte lastButtonState[20] = {   0,  0,  0,  0,    0,  0,  0,  0,
                                       0,  0,  0,  0,    0,  0,  0,  0,
-                                      0,  0,  0,  0,    0,  0,  0,  0,
-                                      0,  0,  0,  0,    0,  0,  0,  0,
-                                      0,  0,  0,  0,    0,  0,  0,  0,
-                                      0,  0,  0,  0,    0,  0,  0,  0 };
-static byte buttonArray[48]     = {  54, 55, 56, 57,   58, 59, 60, 61,      // A0-A7
+                                      0,  0,  0,  0 };
+static byte buttonArray[20]     = {  54, 55, 56, 57,   58, 59, 60, 61,      // A0-A7
                                      62, 63, 64, 65,   66, 67, 68, 69,      // A8-A15
-                                     40, 41, 42, 43,   44, 45, 46, 47,      // D40-D47
-                                     16, 17, 18, 19,   20, 21, 22, 23,      // D16-D23
-                                     24, 25, 26, 27,   28, 29, 30, 31,      // D24-D31
-                                     32, 33, 34, 35,   36, 37, 38, 39 };    // D32-D39
+                                     4, 5, 6, 7 };    // D4-D7
 
 byte lastButtonPressed         = 0;
 #define DEBOUNCE_DELAY 50
