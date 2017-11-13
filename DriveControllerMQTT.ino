@@ -216,7 +216,7 @@ void loop()
   client.loop();
   
   byte i;
-  for( i = 0; i < 48; i++) {
+  for( i = 0; i < 20; i++) {
     processButtonDigital( i );
   }
 }
