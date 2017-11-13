@@ -30,7 +30,7 @@
 #define ENABLE_DHCP                 true   // true/false
 #define ENABLE_MAC_ADDRESS_ROM      true   // true/false
 #define MAC_I2C_ADDRESS             0x50   // Microchip 24AA125E48 I2C ROM address
-static uint8_t mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };  // Set if no MAC ROM
+static uint8_t mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEF };  // Set if no MAC ROM
 IPAddress ip(192,168,1,35);                // Default if DHCP is not used
 
 /* MQTT Settings */
